@@ -1,0 +1,74 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
+package frc.robot.subsystems;
+
+import static frc.robot.Constants.LauncherConstants.*;
+
+import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+public class CANLauncher extends SubsystemBase {
+    private final TalonSRX m_launchWheel;
+    private final TalonSRX m_feedWheel;
+
+    /** Creates a new Launcher. */
+    public CANLauncher() {
+        m_launchWheel = new TalonSRX(kLauncherID);
+        m_feedWheel = new TalonSRX(kFeederID);
+
+        // Reset motor controllers to factory defaults
+        m_launchWheel.configFactoryDefault();
+        m_feedWheel.configFactoryDefault();
+
+        // Set neutral mode to Coast for faster spin-up
+        m_launchWheel.setNeutralMode(NeutralMode.Coast);
+        m_feedWheel.setNeutralMode(NeutralMode.Coast);
+
+        // Enable full voltage output even if battery dips
+        m_launchWheel.configVoltageCompSaturation(12.0);
+        m_launchWheel.enableVoltageCompensation(true);
+        m_feedWheel.configVoltageCompSaturation(12.0);
+        m_feedWheel.enableVoltageCompensation(true);
+
+        // Ensure full power is allowed
+        m_launchWheel.configPeakOutputForward(1.0);
+        m_launchWheel.configPeakOutputReverse(-1.0);
+        m_feedWheel.configPeakOutputForward(1.0);
+        m_feedWheel.configPeakOutputReverse(-1.0);
+
+        // Set current limits if desired (optional — could comment out for testing)
+        m_launchWheel.configPeakCurrentLimit(kFeedCurrentLimit);
+        m_feedWheel.configPeakCurrentLimit(kFeedCurrentLimit);
+    }
+
+    // Command factory for intake mode
+    public Command getIntakeCommand() {
+        return this.startEnd(
+                () -> {
+                    setFeedWheel(kIntakeFeederSpeed);
+                    setLaunchWheel(kIntakeLauncherSpeed);
+                },
+                this::stop);
+    }
+
+    // Set launch wheel speed (percent output)
+    public void setLaunchWheel(double speed) {
+        m_launchWheel.set(TalonSRXControlMode.PercentOutput, speed);
+    }
+
+    // Set feed wheel speed (percent output)
+    public void setFeedWheel(double speed) {
+        m_feedWheel.set(TalonSRXControlMode.PercentOutput, speed);
+    }
+
+    // Stop both wheels
+    public void stop() {
+        m_launchWheel.set(TalonSRXControlMode.PercentOutput, 0);
+        m_feedWheel.set(TalonSRXControlMode.PercentOutput, 0);
+    }
+}
