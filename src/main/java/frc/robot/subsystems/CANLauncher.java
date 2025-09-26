@@ -31,17 +31,17 @@ public class CANLauncher extends SubsystemBase {
 
         // === Configure Launch Motor ===
         SparkMaxConfig launchConfig = new SparkMaxConfig();
-        launchConfig.smartCurrentLimit(40);
+        // launchConfig.smartCurrentLimit(40);
         launchConfig.idleMode(IdleMode.kCoast);
-        launchConfig.openLoopRampRate(0.3);
+        // launchConfig.openLoopRampRate(0.3);
 
         m_launchWheel.configure(launchConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         // === Configure Feed Motor ===
         SparkMaxConfig feedConfig = new SparkMaxConfig();
-        feedConfig.smartCurrentLimit(30);
+        // feedConfig.smartCurrentLimit(30);
         feedConfig.idleMode(IdleMode.kCoast);
-        feedConfig.openLoopRampRate(0.2);
+        // feedConfig.openLoopRampRate(0.2);
 
         m_feedWheel.configure(feedConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
